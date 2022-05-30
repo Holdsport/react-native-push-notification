@@ -73,7 +73,9 @@ public class RNPushNotificationHelper {
         notificationIntent.putExtra(RNPushNotificationPublisher.NOTIFICATION_ID, notificationID);
         notificationIntent.putExtras(bundle);
 
-        return PendingIntent.getBroadcast(context, notificationID, notificationIntent, Build.VERSION.SDK_INT >= Build.VERSION_CODES.M ? PendingIntent.FLAG_UPDATE_CURRENT | PendingIntent.FLAG_IMMUTABLE : PendingIntent.FLAG_UPDATE_CURRENT);
+        int flags = Build.VERSION.SDK_INT >= Build.VERSION_CODES.M ? PendingIntent.FLAG_UPDATE_CURRENT | PendingIntent.FLAG_IMMUTABLE : PendingIntent.FLAG_UPDATE_CURRENT;
+        
+        return PendingIntent.getBroadcast(context, notificationID, notificationIntent, flags);
     }
 
     public void sendNotificationScheduled(Bundle bundle) {
@@ -272,8 +274,10 @@ public class RNPushNotificationHelper {
 
             int notificationID = Integer.parseInt(notificationIdString);
 
-            PendingIntent pendingIntent = PendingIntent.getActivity(context, notificationID, intent,
-                    Build.VERSION.SDK_INT >= Build.VERSION_CODES.M ? PendingIntent.FLAG_UPDATE_CURRENT | PendingIntent.FLAG_IMMUTABLE : PendingIntent.FLAG_UPDATE_CURRENT);
+            
+            int flags = Build.VERSION.SDK_INT >= Build.VERSION_CODES.M ? PendingIntent.FLAG_UPDATE_CURRENT | PendingIntent.FLAG_IMMUTABLE : PendingIntent.FLAG_UPDATE_CURRENT;
+            
+            PendingIntent pendingIntent = PendingIntent.getActivity(context, notificationID, intent, flags);
 
             NotificationManager notificationManager = notificationManager();
             checkOrCreateChannel(notificationManager);
@@ -303,8 +307,10 @@ public class RNPushNotificationHelper {
                     // Add "action" for later identifying which button gets pressed.
                     bundle.putString("action", id);
                     actionIntent.putExtra("notification", bundle);
-                    PendingIntent pendingActionIntent = PendingIntent.getBroadcast(context, notificationID, actionIntent,
-                            PendingIntent.FLAG_UPDATE_CURRENT);
+                    
+                    int flags = Build.VERSION.SDK_INT >= Build.VERSION_CODES.M ? PendingIntent.FLAG_UPDATE_CURRENT | PendingIntent.FLAG_IMMUTABLE : PendingIntent.FLAG_UPDATE_CURRENT;
+                    
+                    PendingIntent pendingActionIntent = PendingIntent.getBroadcast(context, notificationID, actionIntent, flags);
                     notification.addAction(icon, text, pendingActionIntent);
                 }
             }
