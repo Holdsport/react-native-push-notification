@@ -9,6 +9,7 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.os.Bundle;
 import android.util.Log;
+import android.os.Build;
 
 import com.dieam.reactnativepushnotification.helpers.ApplicationBadgeHelper;
 import com.facebook.react.bridge.ActivityEventListener;
@@ -71,7 +72,8 @@ public class RNPushNotification extends ReactContextBaseJavaModule implements Ac
     private void registerNotificationsRegistration() {
         IntentFilter intentFilter = new IntentFilter(getReactApplicationContext().getPackageName() + ".RNPushNotificationRegisteredToken");
 
-        getReactApplicationContext().registerReceiver(new BroadcastReceiver() {
+        if (Build.VERSION.SDK_INT >= 34) {
+          getReactApplicationContext().registerReceiver(new BroadcastReceiver() {
             @Override
             public void onReceive(Context context, Intent intent) {
                 String token = intent.getStringExtra("token");
@@ -80,7 +82,19 @@ public class RNPushNotification extends ReactContextBaseJavaModule implements Ac
 
                 mJsDelivery.sendEvent("remoteNotificationsRegistered", params);
             }
-        }, intentFilter);
+          }, intentFilter, Context.RECEIVER_EXPORTED);
+        } else {
+          getReactApplicationContext().registerReceiver(new BroadcastReceiver() {
+            @Override
+            public void onReceive(Context context, Intent intent) {
+                String token = intent.getStringExtra("token");
+                WritableMap params = Arguments.createMap();
+                params.putString("deviceToken", token);
+
+                mJsDelivery.sendEvent("remoteNotificationsRegistered", params);
+            }
+          }, intentFilter);
+        }
     }
 
     @ReactMethod
